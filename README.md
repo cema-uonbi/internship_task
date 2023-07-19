@@ -1,4 +1,4 @@
-# Internship Task
+# CEMA Internship Task
 
 You have been provided with a dataset (in the data folder above) which contains data on:
 - Acute malnutrition
