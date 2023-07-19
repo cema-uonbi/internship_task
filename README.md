@@ -11,6 +11,10 @@ The monthly data is for children <5 years, disaggregated at a county level for t
 
 Based on what you have learnt so far, conduct analysis and provide insights for this data.
 
+Incase you have challenges with downloading the data, use this link to access the raw csv data: [https://raw.githubusercontent.com/cema-uonbi/internship_task/main/data/cema_internship_task_2023.csv]
+
+We have also provided you with shapefiles incase you need to use them.
+
 Kindly save your R script with your name and submit it on this link: [https://forms.gle/kFCE8pBqDFXFjSuG7]
 
 Note:
