@@ -1,0 +1,289 @@
+---
+title: 'CEMA Internship Task'
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, out.width = "100%")
+```
+
+# Exploratory Data Analysis
+
+## Install and load the required packages
+
+install.packages("tidyverse")
+library(tidyverse)
+
+install.packages("dplyr")
+install.packages("ggplot2")
+
+install.packages("readr")
+library(readr)
+
+library(ggplot2)
+library(dplyr)
+
+install.packages("magrittr")
+library(magrittr)
+
+
+install.packages("DT")
+library(DT)
+
+
+## Step 1 : Loading the Dataset and Checking The Dataset Summary
+
+We are loading the raw csv data from github <https://raw.githubusercontent.com/cema-uonbi/internship_task/main/data/cema_internship_task_2023.csv>
+
+```{r}
+
+data <- read.csv("https://raw.githubusercontent.com/cema-uonbi/internship_task/main/data/cema_internship_task_2023.csv", fileEncoding = "UTF-8")
+
+```
+
+> Get the column names of the data frame
+
+```{r}
+column_names <- names(data)
+
+# Arrange the column names vertically with numbering and print them
+numbered_column_names <- paste(seq_along(column_names), column_names, sep = ". ")
+cat(numbered_column_names, sep = "\n")
+
+```
+
+> Summary of the the data using Head() command to view sample rows and data types
+
+```{r}
+head(data)
+```
+
+## Step 2: Data cleaning and preprocessing:
+
+> Find If Any Column Has Missing Data:
+
+```{r}
+# Check for missing values in each column
+columns_with_missing <- colSums(is.na(data)) > 0
+
+# Print the names of columns with missing values
+print(names(data)[columns_with_missing])
+
+```
+
+> > Replace The Missing Values In The Columns with Mean of the Column
+
+```{r}
+# Convert columns (excluding the first two columns) to numeric
+
+cols_to_convert <- setdiff(names(data), c("period", "county"))
+data[cols_to_convert] <- lapply(data[cols_to_convert], as.integer)
+
+# Check the data types of the columns after conversion
+#head(data)
+
+# Calculate the mean of each numeric column (excluding the first two columns)
+# Calculate the mean of each numeric column (excluding the first two columns)
+numeric_cols <- sapply(data, is.numeric)
+column_means <- colMeans(data[, numeric_cols], na.rm = TRUE)
+
+# Replace missing values in each column with the mean of that column
+data_cleaned <- data
+for (col in names(data)) {
+  data_cleaned[[col]][is.na(data_cleaned[[col]])] <- column_means[col]
+}
+
+# Check if any column has missing values after imputation (optional step)
+columns_with_missing <- colSums(is.na(data_cleaned)) > 0
+print(names(data_cleaned)[columns_with_missing])
+
+# Now we print the data
+head(data_cleaned)
+
+```
+
+## Step 3 : Explore the distribution of variables:
+
+ > Histogram of Total Number of Children Dewormed By Month Over A Year
+
+
+```{r}
+
+library(ggplot2)
+
+library(dplyr)
+
+# Filter the data to include only "Jan-23" period
+data_jan_23 <- data_cleaned %>%
+  filter(period == "Jan-23")
+
+# Create the ggplot using the filtered data
+ggplot(data_jan_23, aes(y = gsub(" County", "", county), x = Total.Dewormed)) +
+  geom_col(fill = "skyblue", color = "black") +
+  theme_bw() +
+  labs(title = "Number of Children Dewormed by County In January 2023",
+       y = "County",
+       x = "Total Dewormed")
+
+# Filter the data to include only "Feb-23" period
+data_feb_23 <- data_cleaned %>%
+  filter(period == "Feb-23")
+
+# Create the ggplot using the filtered data
+ggplot(data_feb_23, aes(y = gsub(" County", "", county), x = Total.Dewormed)) +
+  geom_col(fill = "skyblue", color = "black") +
+  theme_bw() +
+  labs(title = "Number of Children Dewormed by County In February 2023",
+       y = "County",
+       x = "Total Dewormed")
+```
+
+
+ > Histogram of Total Children Dewormed By Month from January 2021 to June 2023
+ 
+```{r}
+# Load the ggplot2 and dplyr packages
+library(ggplot2)
+library(dplyr)
+
+
+# Extract the first three characters of the "Period" column to create a new column "Month"
+data_cleaned$Month <- substring(data_cleaned$period, 1, 3)
+
+
+# Define the order of the months
+month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+# Convert the "Month" column to a factor with the desired order
+data_cleaned$Month <- factor(data_cleaned$Month, levels = month_order)
+
+# Sum the "Total Dewormed" values for each unique month
+sum_by_month <- data_cleaned %>%
+  group_by(Month) %>%
+  summarise(total_dewormed = sum(Total.Dewormed))
+
+# Create the ggplot using the summarized data
+ggplot(sum_by_month, aes(x = Month, y = total_dewormed)) +
+  geom_col(fill = "skyblue", color = "black") +
+  theme_bw() +
+  labs(title = "Total Children Dewormed by Month from January 2021 to June 2023",
+       x = "Month",
+       y = "Total Dewormed") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+ > Histogram of Total Number of Acute Malnutrition By Month Between January 2021 to June 2023
+ 
+```{r}
+# Load the ggplot2 and dplyr packages
+library(ggplot2)
+library(dplyr)
+
+
+# Extract the first three characters of the "Period" column to create a new column "Month"
+data_cleaned$Month <- substring(data_cleaned$period, 1, 3)
+
+
+# Define the order of the months
+month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+# Convert the "Month" column to a factor with the desired order
+data_cleaned$Month <- factor(data_cleaned$Month, levels = month_order)
+
+# Sum the "Total Dewormed" values for each unique month
+sum_by_month <- data_cleaned %>%
+  group_by(Month) %>%
+  summarise(total_dewormed = sum(Acute.Malnutrition))
+
+# Create the ggplot using the summarized data
+ggplot(sum_by_month, aes(x = Month, y = total_dewormed)) +
+  geom_col(fill = "skyblue", color = "black") +
+  theme_bw() +
+  labs(title = "Total Number of Acute Malnutrition By Month from Jan 2021 to June 2023",
+       x = "Month",
+       y = "Total Cases of Acute Malnutrition") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+ > Histogram of Total Number of Children with Stunted Growth Between 6 to 23.months between January 2021 to June 2023
+ 
+```{r}
+# Load the ggplot2 and dplyr packages
+library(ggplot2)
+library(dplyr)
+
+
+# Extract the first three characters of the "Period" column to create a new column "Month"
+data_cleaned$Month <- substring(data_cleaned$period, 1, 3)
+
+
+# Define the order of the months
+month_order <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+# Convert the "Month" column to a factor with the desired order
+data_cleaned$Month <- factor(data_cleaned$Month, levels = month_order)
+
+# Sum the "Total Dewormed" values for each unique month
+sum_by_month <- data_cleaned %>%
+  group_by(Month) %>%
+  summarise(total_dewormed = sum(stunted.6.23.months))
+
+# Create the ggplot using the summarized data
+ggplot(sum_by_month, aes(x = Month, y = total_dewormed)) +
+  geom_col(fill = "skyblue", color = "black") +
+  theme_bw() +
+  labs(title = "Children with Stunted Growth Between 6 to 23.months Btwn Jan 2021 to June 2023",
+       x = "Month",
+       y = "unted Growth Between 6 to 23.months") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+ 
+## Step 4: Analyzing Trends with Time Series
+ 
+```{r}
+
+
+```
+
+
+## Step 5: Calculate mean, median, standard deviation, for insights and visualizations
+
+ > Mean, median, standard deviation,  for insights for 2021
+ > Mean, median, standard deviation,  for insights for 2022
+ > Mean, median, standard deviation,  for insights for 2023
+ 
+ 
+## Step 6: Finding Correlation between Different Columns By Use of Scatter Plots and Matrices.
+
+## Step 7: Formulation of research question based on gathered Insighst.
+
+
+## Formulated Research Questions
+
+> 1.How does the number of children dewormed and the prevalence of acute malnutrition change over the study period, and are there any patterns or correlations between these two variables?
+
+> 2.How does the prevalence of acute malnutrition vary across counties, and are there specific counties that experience a higher burden than others?
+
+> 3.Are there any significant differences in the prevalence of underweight children between rural and urban areas within the counties of Kenya?
+
+> 4.Is there a relationship between the prevalence of stunted children and the number of underweight children across different age groups in the 47 counties of Kenya?
+
+## Step 8: Addressing the research question by use of visualizations and data analysis techniques: 
+
+>How does the number of children dewormed and the prevalence of acute malnutrition change over the study period, and are there any patterns or correlations between these two variables?
+
+
+>> Plot time series graphs to observe trends and seasonality in the number of children dewormed and the prevalence of acute malnutrition over time.
+>> Calculate summary statistics to understand the central tendency and dispersion of these variables over the study period.
+>> Use scatter plots and correlation analysis to explore the relationship between the number of children dewormed and the prevalence of acute malnutrition.
+
+
+## Step 9: Summarize the most important findings from your data analysis.
+
+
