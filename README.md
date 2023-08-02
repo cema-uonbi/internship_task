@@ -8,7 +8,7 @@ The dataset contains the following variables:
 - Total number of children dewormed (Total Dewormed)
 - Number of children <5 years with acute malnutrition (Acute Malnutrition)
 - Number of children stunted (0-6 months, 6-23 months, 24-59 months)
-- Number of children <5 years with diarrhe (Diarrhea cases)
+- Number of children <5 years with diarrhea (Diarrhea cases)
 - Number of children who are underweight (0-6 months, 6-23 months, 24-59 months)
 
 Your task is to:
