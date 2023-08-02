@@ -2,7 +2,7 @@
 
 You have been provided with a dataset (in the data folder above) which contains monthly data for children <5 years, disaggregated at a county level for the period January 2021 to June 2023.
 
-The dataset contains the following varibales:
+The dataset contains the following variables:
 - Period (months from January 2021 to June 2023)
 - County (the 47 counties in Kenya)
 - Total number of children dewormed (Total Dewormed)
